@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 20px;
+            padding-bottom: 50px;
+        }
+        
+        .card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 1.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 10px 25px;
+            font-weight: 600;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .form-control {
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            border: none;
+            border-left: 4px solid #28a745;
+            border-radius: 8px;
+        }
+        
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .table thead th {
+            background-color: #667eea;
+            color: white;
+            border: none;
+            padding: 15px;
+            font-weight: 600;
+        }
+        
+        .table tbody tr {
+            transition: all 0.3s;
+        }
+        
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .badge-clicks {
+            background-color: #764ba2;
+            font-size: 0.9em;
+        }
+        
+        .short-url {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .copy-btn {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .copy-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .header-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-link-45deg header-icon"></i>
+                        <h1 class="display-6 mb-0">URL Shortener</h1>
+                        <p class="mb-0 opacity-75">Create short, memorable links in seconds</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <% if (locals.url) { %>
+            <div class="row justify-content-center mb-4">
+                <div class="col-lg-8">
+                    <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
+                        <i class="bi bi-check-circle-fill me-3 fs-4"></i>
+                        <div class="flex-grow-1">
+                            <strong>URL Generated Successfully!</strong>
+                            <div class="short-url d-flex justify-content-between align-items-center mt-2">
+                                <code id="shortUrl" class="fs-5"><%= url %></code>
+                                <button class="btn btn-sm btn-outline-primary copy-btn" onclick="copyToClipboard()">
+                                    <i class="bi bi-clipboard"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+
+        <!-- URL Input Form -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <form method="POST" action="/user/URL">
+                            <div class="mb-4">
+                                <label for="urlInput" class="form-label fw-bold fs-5">
+                                    <i class="bi bi-link me-2"></i>Enter your URL
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="bi bi-globe"></i>
+                                    </span>
+                                    <input 
+                                        type="url" 
+                                        class="form-control" 
+                                        id="urlInput"
+                                        name="Url" 
+                                        placeholder="https://example.com/very-long-url-path" 
+                                        required
+                                    >
+                                </div>
+                                <div class="form-text mt-2">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Enter a valid URL including http:// or https://
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-magic me-2"></i>Generate Short URL
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- URLs Table -->
+        <% if (locals.urls) { %>
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="h4 mb-0">
+                                <i class="bi bi-list-ul me-2"></i>Shortened URLs
+                            </h2>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th width="10%">#</th>
+                                            <th width="25%">Short ID</th>
+                                            <th width="45%">Original URL</th>
+                                            <th width="20%" class="text-center">Clicks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% urls.forEach((u, index) => { %>
+                                            <tr>
+                                                <td class="fw-bold"><%= index + 1 %></td>
+                                                <td>
+                                                    <span class="badge bg-primary bg-gradient rounded-pill px-3 py-2">
+                                                        <%= u._id %>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="bi bi-box-arrow-up-right me-2 text-primary"></i>
+                                                        <div class="d-flex flex-column">
+                                                            <a href="/<%= u._id %>" target="_blank" class="text-decoration-none">
+                                                                <span class="fw-medium">
+                                                                    <%= u.Url.length > 50 ? u.Url.substring(0, 50) + '...' : u.Url %>
+                                                                </span>
+                                                            </a>
+                                                            <small class="text-muted">
+                                                                <a href="/user/<%= u._id %>" target="_blank" class="text-decoration-none">
+                                                                    <%= req.protocol %>://<%= req.headers.host %>/<%= u._id %>
+                                                                </a>
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="badge badge-clicks rounded-pill px-3 py-2">
+                                                        <i class="bi bi-mouse me-1"></i><%= u.clicks %>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer text-muted d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="bi bi-info-circle me-1"></i>
+                                Total URLs: <span class="badge bg-secondary"><%= urls.length %></span>
+                            </div>
+                            <div>
+                                <i class="bi bi-arrow-clockwise me-1"></i>
+                                Click on any short ID to redirect
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Copy to Clipboard Functionality -->
+    <script>
+        function copyToClipboard() {
+            const shortUrl = document.getElementById('shortUrl').textContent;
+            navigator.clipboard.writeText(shortUrl).then(() => {
+                // Show temporary feedback
+                const copyBtn = event.currentTarget;
+                const originalHTML = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="bi bi-check"></i> Copied!';
+                copyBtn.classList.remove('btn-outline-primary');
+                copyBtn.classList.add('btn-success');
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalHTML;
+                    copyBtn.classList.remove('btn-success');
+                    copyBtn.classList.add('btn-outline-primary');
+                }, 2000);
+            });
+        }
+        
+        // Add animation to table rows
+        document.addEventListener('DOMContentLoaded', function() {
+            const tableRows = document.querySelectorAll('tbody tr');
+            tableRows.forEach((row, index) => {
+                row.style.animationDelay = `${index * 0.05}s`;
+            });
+        });
+    </script>
+</body>
+
+</html>
